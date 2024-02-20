@@ -1,10 +1,11 @@
 package com.github.segu23.xlsxconverter.controller;
 
+import com.github.segu23.xlsxconverter.CalcFileConverter;
 import com.github.segu23.xlsxconverter.exception.SheetNotFoundException;
 import com.github.segu23.xlsxconverter.model.SecondTestUserModel;
 import com.github.segu23.xlsxconverter.model.TestUserModel;
-import com.github.segu23.xlsxconverter.CalcFileConverter;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/document")
@@ -25,17 +26,17 @@ public class DocumentController {
             @RequestParam("startColumn") int startColumn,
             @RequestParam(value = "sheet", required = false) String sheetName,
             @RequestParam(value = "sheetIndex", required = false, defaultValue = "0") int sheetIndex) {
-        try{
+        try {
             Workbook workbook = CalcFileConverter.getWorkbook(file);
             Sheet sheet;
 
-            if(sheetName != null && !sheetName.equalsIgnoreCase("")){
+            if (sheetName != null && !sheetName.equalsIgnoreCase("")) {
                 sheet = CalcFileConverter.getSheetByName(workbook, sheetName);
-            }else{
+            } else {
                 sheet = CalcFileConverter.getSheetByIndex(workbook, sheetIndex);
             }
 
-            if(sheet == null) throw new SheetNotFoundException();
+            if (sheet == null) throw new SheetNotFoundException();
 
             int endRow = CalcFileConverter.getLastRow(sheet, startRow, startColumn);
             int endColumn = CalcFileConverter.getLastColumn(sheet, startRow, startColumn);
@@ -44,7 +45,7 @@ public class DocumentController {
             users.forEach(System.out::println);
 
             return ResponseEntity.ok().build();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return ResponseEntity.badRequest().build();
@@ -57,17 +58,17 @@ public class DocumentController {
             @RequestParam("startColumn") int startColumn,
             @RequestParam(value = "sheet", required = false) String sheetName,
             @RequestParam(value = "sheetIndex", required = false, defaultValue = "0") int sheetIndex) {
-        try{
+        try {
             Workbook workbook = CalcFileConverter.getWorkbook(file);
             Sheet sheet;
 
-            if(sheetName != null && !sheetName.equalsIgnoreCase("")){
+            if (sheetName != null && !sheetName.equalsIgnoreCase("")) {
                 sheet = CalcFileConverter.getSheetByName(workbook, sheetName);
-            }else{
+            } else {
                 sheet = CalcFileConverter.getSheetByIndex(workbook, sheetIndex);
             }
 
-            if(sheet == null) throw new SheetNotFoundException();
+            if (sheet == null) throw new SheetNotFoundException();
             int endRow = CalcFileConverter.getLastRow(sheet, startRow, startColumn);
             int endColumn = CalcFileConverter.getLastColumn(sheet, startRow, startColumn);
 
@@ -75,7 +76,7 @@ public class DocumentController {
             users.forEach(System.out::println);
 
             return ResponseEntity.ok().build();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return ResponseEntity.badRequest().build();

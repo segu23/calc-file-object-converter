@@ -117,7 +117,7 @@ public class CalcFileConverter {
     }
 
     public static Sheet getSheetByIndex(Workbook workbook, int sheetIndex) throws SheetNotFoundException {
-        if(sheetIndex >= workbook.getNumberOfSheets()) throw new SheetNotFoundException();
+        if (sheetIndex >= workbook.getNumberOfSheets()) throw new SheetNotFoundException();
 
         Sheet sheet = workbook.getSheetAt(sheetIndex);
 
@@ -127,7 +127,7 @@ public class CalcFileConverter {
     public static Sheet getSheetByName(Workbook workbook, @Nullable String sheetName) throws IOException, InvalidFileTypeException, SheetNotFoundException {
         Sheet sheet = workbook.getSheet(sheetName);
 
-        if(sheet == null) throw new SheetNotFoundException();
+        if (sheet == null) throw new SheetNotFoundException();
 
         return sheet;
     }
@@ -135,11 +135,11 @@ public class CalcFileConverter {
     public static Workbook getWorkbook(MultipartFile file) throws IOException, InvalidFileTypeException {
         Workbook workbook;
 
-        if(file.getOriginalFilename().endsWith(".xlsx")){
+        if (file.getOriginalFilename().endsWith(".xlsx")) {
             workbook = new XSSFWorkbook(file.getInputStream());
-        }else if(file.getOriginalFilename().endsWith(".xls")){
+        } else if (file.getOriginalFilename().endsWith(".xls")) {
             workbook = new HSSFWorkbook(file.getInputStream());
-        }else{
+        } else {
             throw new InvalidFileTypeException();
         }
 
