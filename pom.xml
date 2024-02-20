@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.github.segu23</groupId>
-	<artifactId>xlsx-converter</artifactId>
+	<artifactId>calc-file-object-converter</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>xlsx-converter</name>
 	<description>xlsx-converter project</description>
