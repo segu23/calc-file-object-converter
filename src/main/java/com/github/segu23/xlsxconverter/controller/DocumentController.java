@@ -1,6 +1,6 @@
 package com.github.segu23.xlsxconverter.controller;
 
-import com.github.segu23.xlsxconverter.CalcFileConverter;
+import com.github.segu23.xlsxconverter.converter.CalcFileConverter;
 import com.github.segu23.xlsxconverter.exception.SheetNotFoundException;
 import com.github.segu23.xlsxconverter.model.SecondTestUserModel;
 import com.github.segu23.xlsxconverter.model.TestUserModel;

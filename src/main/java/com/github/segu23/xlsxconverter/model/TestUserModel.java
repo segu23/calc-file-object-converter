@@ -1,17 +1,22 @@
 package com.github.segu23.xlsxconverter.model;
 
+import com.github.segu23.xlsxconverter.annotation.ExcelColumn;
+
 public class TestUserModel {
 
-    private int ID;
-    private String Name;
-    private String Email;
+    @ExcelColumn("ID")
+    private int id;
+    @ExcelColumn("Name")
+    private String name;
+    @ExcelColumn("Email")
+    private String email;
 
     @Override
     public String toString() {
         return "TestUserModel{" +
-                "ID=" + ID +
-                ", Name='" + Name + '\'' +
-                ", Email='" + Email + '\'' +
+                "ID=" + id +
+                ", Name='" + name + '\'' +
+                ", Email='" + email + '\'' +
                 '}';
     }
 }

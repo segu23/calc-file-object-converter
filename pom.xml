@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.github.segu23</groupId>
 	<artifactId>calc-file-object-converter</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0</version>
 	<name>xlsx-converter</name>
 	<description>xlsx-converter project</description>
 	<properties>
