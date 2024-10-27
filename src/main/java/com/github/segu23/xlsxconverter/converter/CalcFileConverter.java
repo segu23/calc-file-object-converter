@@ -4,11 +4,10 @@ import com.github.segu23.xlsxconverter.annotation.ExcelColumn;
 import com.github.segu23.xlsxconverter.exception.DataTypeConversionNotFoundException;
 import com.github.segu23.xlsxconverter.exception.ExcelFieldNotFoundException;
 import com.github.segu23.xlsxconverter.exception.SheetNotFoundException;
-import jakarta.annotation.Nullable;
 import org.apache.poi.ss.usermodel.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
@@ -166,7 +165,7 @@ public class CalcFileConverter {
         return workbook.getSheetAt(sheetIndex);
     }
 
-    public static Sheet getSheetByName(Workbook workbook, @Nullable String sheetName) throws SheetNotFoundException {
+    public static Sheet getSheetByName(Workbook workbook, String sheetName) throws SheetNotFoundException {
         Sheet sheet = workbook.getSheet(sheetName);
 
         if (sheet == null) throw new SheetNotFoundException();
@@ -174,19 +173,9 @@ public class CalcFileConverter {
         return sheet;
     }
 
-    public static Workbook getWorkbook(MultipartFile file) throws IOException {
+    public static Workbook getWorkbook(InputStream file) throws IOException {
         Workbook workbook;
-        workbook = WorkbookFactory.create(file.getInputStream());
-
-//        if (file.getOriginalFilename().endsWith(".xlsx")) {
-//            workbook = new XSSFWorkbook(file.getInputStream());
-//        } else if (file.getOriginalFilename().endsWith(".xls")) {
-//            workbook = new HSSFWorkbook(file.getInputStream());
-//        } else if (file.getOriginalFilename().endsWith(".xlsm")) {
-//            workbook = WorkbookFactory.create(file.getInputStream());
-//        } else {
-//            throw new InvalidFileTypeException();
-//        }
+        workbook = WorkbookFactory.create(file);
 
         return workbook;
     }
