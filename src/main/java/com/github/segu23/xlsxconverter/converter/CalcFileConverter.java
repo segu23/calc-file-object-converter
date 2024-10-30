@@ -68,30 +68,37 @@ public class CalcFileConverter {
 
                 if (cell != null) {
                     switch (cell.getCellType()) {
-                        case BLANK -> {
+                        case BLANK: {
                             continue;
                         }
-                        case NUMERIC -> {
+                        case NUMERIC: {
                             cellVal = String.valueOf(cell.getNumericCellValue());
+                            break;
                         }
-                        case STRING -> {
+                        case STRING: {
                             cellVal = cell.getStringCellValue();
+                            break;
                         }
-                        case BOOLEAN -> {
+                        case BOOLEAN: {
                             cellVal = String.valueOf(cell.getBooleanCellValue());
+                            break;
                         }
-                        case FORMULA -> {
+                        case FORMULA: {
                             switch (cell.getCachedFormulaResultType()) {
-                                case STRING -> {
+                                case STRING: {
                                     cellVal = cell.getStringCellValue();
+                                    break;
                                 }
-                                case NUMERIC -> {
+                                case NUMERIC: {
                                     cellVal = String.valueOf(cell.getNumericCellValue());
+                                    break;
                                 }
-                                case BOOLEAN -> {
+                                case BOOLEAN: {
                                     cellVal = String.valueOf(cell.getBooleanCellValue());
+                                    break;
                                 }
                             }
+                            break;
                         }
                     }
 
