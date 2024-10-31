@@ -38,7 +38,7 @@ public class CalcFileConverter {
         DATA_TYPE_CONVERSIONS.put(type, dataTypeConversion);
     }
 
-    public static <T> List<T> extractObjectsFromTable(Sheet sheet, int startRow, int endRow, int startColumn, int endColumn, Class<T> type) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, ExcelFieldNotFoundException, DataTypeConversionNotFoundException {
+    public static <T> List<ExcelObjectWrapper<T>> extractObjectsFromTable(Sheet sheet, int startRow, int endRow, int startColumn, int endColumn, Class<T> type) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, ExcelFieldNotFoundException, DataTypeConversionNotFoundException {
         String[] columnNames = getTableColumnNames(sheet, startRow, startColumn, endColumn);
 
         return extractObjectsFromTable(sheet, startRow, endRow, startColumn, endColumn, type, columnNames);
