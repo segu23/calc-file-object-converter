@@ -3,7 +3,9 @@ package com.github.segu23.xlsxconverter.converter;
 import com.github.segu23.xlsxconverter.annotation.ExcelColumn;
 import com.github.segu23.xlsxconverter.exception.DataTypeConversionNotFoundException;
 import com.github.segu23.xlsxconverter.exception.ExcelFieldNotFoundException;
+import com.github.segu23.xlsxconverter.exception.FieldsConversionException;
 import com.github.segu23.xlsxconverter.exception.SheetNotFoundException;
+import com.github.segu23.xlsxconverter.model.ExcelFieldConversionError;
 import com.github.segu23.xlsxconverter.model.ExcelObjectWrapper;
 import org.apache.poi.ss.usermodel.*;
 
@@ -38,7 +40,7 @@ public class CalcFileConverter {
         DATA_TYPE_CONVERSIONS.put(type, dataTypeConversion);
     }
 
-    public static <T> List<ExcelObjectWrapper<T>> extractObjectsFromTable(Sheet sheet, int startRow, int endRow, int startColumn, int endColumn, Class<T> type) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, ExcelFieldNotFoundException, DataTypeConversionNotFoundException {
+    public static <T> List<ExcelObjectWrapper<T>> extractObjectsFromTable(Sheet sheet, int startRow, int endRow, int startColumn, int endColumn, Class<T> type) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, ExcelFieldNotFoundException, DataTypeConversionNotFoundException, FieldsConversionException {
         String[] columnNames = getTableColumnNames(sheet, startRow, startColumn, endColumn);
 
         return extractObjectsFromTable(sheet, startRow, endRow, startColumn, endColumn, type, columnNames);
@@ -55,9 +57,10 @@ public class CalcFileConverter {
         return columnNames;
     }
 
-    public static <T> List<ExcelObjectWrapper<T>> extractObjectsFromTable(Sheet sheet, int startRow, int endRow, int startColumn, int endColumn, Class<T> type, String[] columns) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, ExcelFieldNotFoundException, DataTypeConversionNotFoundException {
+    public static <T> List<ExcelObjectWrapper<T>> extractObjectsFromTable(Sheet sheet, int startRow, int endRow, int startColumn, int endColumn, Class<T> type, String[] columns) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, ExcelFieldNotFoundException, DataTypeConversionNotFoundException, FieldsConversionException {
         Map<String, Field> classFields = getClassExcelColumnFieldsMap(type);
         List<ExcelObjectWrapper<T>> objectList = new ArrayList<>();
+        List<ExcelFieldConversionError> errors = new ArrayList<>();
 
         for (int i = startRow + 1; i <= endRow; i++) {
             T object = type.getDeclaredConstructor().newInstance();
@@ -103,11 +106,19 @@ public class CalcFileConverter {
                         }
                     }
 
-                    assignValueToField(object, columnName, cellVal, classFields);
+                    try{
+                        assignValueToField(object, columnName, cellVal, classFields);
+                    }catch (Exception e){
+                        errors.add(new ExcelFieldConversionError(i, columnName, cellVal));
+                    }
                 }
             }
 
             objectList.add(new ExcelObjectWrapper<>(i, object));
+        }
+
+        if(!errors.isEmpty()){
+            throw new FieldsConversionException("Error converting fields", errors);
         }
 
         return objectList;

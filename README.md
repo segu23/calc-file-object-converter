@@ -91,7 +91,9 @@ if(sheet == null) throw new SheetNotFoundException();
 // superior-izquierda, la cual conforma el encabezado de la misma
 // y saber el largo y alta de la tabla, pero para eso hay una función
 // que permite conocer estos datos corroborando donde se encuentra el primer 
-// espacio en blanco (fin de la tabla) 
+// espacio en blanco (fin de la tabla)
+int startRow = 0;
+int startColumn = 0; 
 int endRow = CalcFileConverter.getLastRow(sheet, startRow, startColumn);
 int endColumn = CalcFileConverter.getLastColumn(sheet, startRow, startColumn);
 
