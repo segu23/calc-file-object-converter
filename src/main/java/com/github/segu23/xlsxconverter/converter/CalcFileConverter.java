@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class CalcFileConverter {
 
@@ -64,6 +65,7 @@ public class CalcFileConverter {
 
         for (int i = startRow + 1; i <= endRow; i++) {
             T object = type.getDeclaredConstructor().newInstance();
+            boolean errorsFound = false;
 
             for (int j = startColumn; j <= endColumn; j++) {
                 String columnName = columns[j - startColumn];
@@ -110,15 +112,19 @@ public class CalcFileConverter {
                         assignValueToField(object, columnName, cellVal, classFields);
                     }catch (Exception e){
                         errors.add(new ExcelFieldConversionError(i, columnName, cellVal));
+                        errorsFound = true;
                     }
                 }
             }
 
+            if(errorsFound){
+                continue;
+            }
             objectList.add(new ExcelObjectWrapper<>(i, object));
         }
 
         if(!errors.isEmpty()){
-            throw new FieldsConversionException("Error converting fields", errors);
+            throw new FieldsConversionException("Error converting fields", errors, new ArrayList<>(objectList.stream().map(obj -> (ExcelObjectWrapper<Object>) obj).collect(Collectors.toList())));
         }
 
         return objectList;
