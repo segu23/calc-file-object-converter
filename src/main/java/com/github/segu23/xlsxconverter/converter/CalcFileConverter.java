@@ -1,10 +1,7 @@
 package com.github.segu23.xlsxconverter.converter;
 
 import com.github.segu23.xlsxconverter.annotation.ExcelColumn;
-import com.github.segu23.xlsxconverter.exception.DataTypeConversionNotFoundException;
-import com.github.segu23.xlsxconverter.exception.ExcelFieldNotFoundException;
-import com.github.segu23.xlsxconverter.exception.FieldsConversionException;
-import com.github.segu23.xlsxconverter.exception.SheetNotFoundException;
+import com.github.segu23.xlsxconverter.exception.*;
 import com.github.segu23.xlsxconverter.model.ExcelFieldConversionError;
 import com.github.segu23.xlsxconverter.model.ExcelObjectWrapper;
 import org.apache.poi.ss.usermodel.*;
@@ -14,10 +11,7 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class CalcFileConverter {
@@ -41,7 +35,7 @@ public class CalcFileConverter {
         DATA_TYPE_CONVERSIONS.put(type, dataTypeConversion);
     }
 
-    public static <T> List<ExcelObjectWrapper<T>> extractObjectsFromTable(Sheet sheet, int startRow, int endRow, int startColumn, int endColumn, Class<T> type) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, ExcelFieldNotFoundException, DataTypeConversionNotFoundException, FieldsConversionException {
+    public static <T> List<ExcelObjectWrapper<T>> extractObjectsFromTable(Sheet sheet, int startRow, int endRow, int startColumn, int endColumn, Class<T> type) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, ExcelFieldNotFoundException, DataTypeConversionNotFoundException, FieldsConversionException, MissingFieldsException {
         String[] columnNames = getTableColumnNames(sheet, startRow, startColumn, endColumn);
 
         return extractObjectsFromTable(sheet, startRow, endRow, startColumn, endColumn, type, columnNames);
@@ -51,6 +45,10 @@ public class CalcFileConverter {
         String[] columnNames = new String[endColumn - startColumn + 1];
 
         for (int j = startColumn; j <= endColumn; j++) {
+            if (sheet.getRow(startRow) == null || sheet.getRow(startRow).getCell(j) == null) {
+                columnNames[j - startColumn] = null;
+                continue;
+            }
             String columnName = sheet.getRow(startRow).getCell(j).getStringCellValue();
             columnNames[j - startColumn] = columnName;
         }
@@ -58,8 +56,19 @@ public class CalcFileConverter {
         return columnNames;
     }
 
-    public static <T> List<ExcelObjectWrapper<T>> extractObjectsFromTable(Sheet sheet, int startRow, int endRow, int startColumn, int endColumn, Class<T> type, String[] columns) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, ExcelFieldNotFoundException, DataTypeConversionNotFoundException, FieldsConversionException {
+    public static <T> List<ExcelObjectWrapper<T>> extractObjectsFromTable(Sheet sheet, int startRow, int endRow, int startColumn, int endColumn, Class<T> type, String[] columns) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, FieldsConversionException, MissingFieldsException {
         Map<String, Field> classFields = getClassExcelColumnFieldsMap(type);
+        List<String> missingFields = new ArrayList<>();
+        List<String> columnsList = Arrays.asList(columns);
+        classFields.forEach((key, value) -> {
+            if (!columnsList.contains(key)) {
+                missingFields.add(key);
+            }
+        });
+        if (!missingFields.isEmpty()) {
+            throw new MissingFieldsException(missingFields);
+        }
+
         List<ExcelObjectWrapper<T>> objectList = new ArrayList<>();
         List<ExcelFieldConversionError> errors = new ArrayList<>();
 
@@ -108,22 +117,22 @@ public class CalcFileConverter {
                         }
                     }
 
-                    try{
+                    try {
                         assignValueToField(object, columnName, cellVal, classFields);
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         errors.add(new ExcelFieldConversionError(i, columnName, cellVal));
                         errorsFound = true;
                     }
                 }
             }
 
-            if(errorsFound){
+            if (errorsFound) {
                 continue;
             }
             objectList.add(new ExcelObjectWrapper<>(i, object));
         }
 
-        if(!errors.isEmpty()){
+        if (!errors.isEmpty()) {
             throw new FieldsConversionException("Error converting fields", errors, new ArrayList<>(objectList.stream().map(obj -> (ExcelObjectWrapper<Object>) obj).collect(Collectors.toList())));
         }
 
