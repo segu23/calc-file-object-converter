@@ -5,7 +5,7 @@
 
 	<groupId>com.github.segu23</groupId>
 	<artifactId>calc-file-object-converter</artifactId>
-	<version>1.7</version>
+	<version>1.7.1</version>
 	<name>xlsx-converter</name>
 	<description>xlsx-converter project</description>
 
@@ -17,12 +17,12 @@
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>
-			<version>5.3.0</version>
+			<version>5.4.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-ooxml</artifactId>
-			<version>5.3.0</version>
+			<version>5.4.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.dhatim</groupId>
