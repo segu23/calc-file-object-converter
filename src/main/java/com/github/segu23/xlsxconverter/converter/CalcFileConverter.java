@@ -38,7 +38,7 @@ public class CalcFileConverter {
     public static <T> List<ExcelObjectWrapper<T>> extractObjectsFromTable(Sheet sheet, int startRow, int endRow, int startColumn, int endColumn, Class<T> type) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, ExcelFieldNotFoundException, DataTypeConversionNotFoundException, FieldsConversionException, MissingFieldsException {
         String[] columnNames = getTableColumnNames(sheet, startRow, startColumn, endColumn);
 
-        return extractObjectsFromTable(sheet, startRow, endRow, startColumn, endColumn, type, columnNames);
+        return extractObjectsFromTable(sheet, startRow + 1, endRow, startColumn, endColumn, type, columnNames);
     }
 
     private static String[] getTableColumnNames(Sheet sheet, int startRow, int startColumn, int endColumn) {
@@ -72,7 +72,7 @@ public class CalcFileConverter {
         List<ExcelObjectWrapper<T>> objectList = new ArrayList<>();
         List<ExcelFieldConversionError> errors = new ArrayList<>();
 
-        for (int i = startRow + 1; i <= endRow; i++) {
+        for (int i = startRow; i <= endRow; i++) {
             T object = type.getDeclaredConstructor().newInstance();
             boolean errorsFound = false;
 
